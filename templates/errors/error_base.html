@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Error{% endblock %} - XSS CVE Viewer</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="error-page">
+    <div class="error-container">
+        <div class="error-box text-center">
+            <div class="error-icon">
+                {% block error_icon %}
+                <i class="fas fa-exclamation-circle"></i>
+                {% endblock %}
+            </div>
+            <h1 class="error-code">{% block error_code %}Error{% endblock %}</h1>
+            <h2 class="error-title">{% block error_title %}An error occurred{% endblock %}</h2>
+            <p class="error-message">{% block error_message %}Please try again later.{% endblock %}</p>
+            <div class="error-actions">
+                <a href="{{ url_for('main.main_index') }}" class="btn btn-primary">
+                    <i class="fas fa-home me-2"></i>Return Home
+                </a>
+                {% block additional_actions %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

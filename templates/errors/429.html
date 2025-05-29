@@ -1,0 +1,15 @@
+{% extends "errors/error_base.html" %}
+
+{% block title %}429 Too Many Requests{% endblock %}
+
+{% block error_icon %}
+<i class="fas fa-hourglass-half"></i>
+{% endblock %}
+
+{% block error_code %}429{% endblock %}
+
+{% block error_title %}Too Many Requests{% endblock %}
+
+{% block error_message %}
+You've made too many requests. Please wait a while before trying again.
+{% endblock %} 
