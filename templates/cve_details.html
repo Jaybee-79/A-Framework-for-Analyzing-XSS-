@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ cve.cve }} - XSS CVE Details</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('main.main_index') }}">
+                <i class="fas fa-shield-alt me-2"></i>XSS CVE Report
+            </a>
+            <div class="d-flex align-items-center">
+                {% if current_user.is_authenticated %}
+                <span class="navbar-text me-3">
+                    <i class="fas fa-user me-2"></i>{{ current_user.username }}
+                </span>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger btn-sm">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-info btn-sm me-2">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+                <a href="{{ url_for('auth.signup') }}" class="btn btn-info btn-sm">
+                    <i class="fas fa-user-plus me-2"></i>Sign Up
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('main.main_index') }}" class="text-decoration-none">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">{{ cve.cve }}</li>
+            </ol>
+        </nav>
+
+        {% if not current_user.is_authenticated %}
+        <div class="alert alert-warning" role="alert">
+            <i class="fas fa-lock me-2"></i>
+            Please <a href="{{ url_for('auth.login', next=url_for('main.cve_details', cve_id=cve.cve)) }}" class="alert-link">login</a> to view detailed CVE information including input vectors and payloads.
+        </div>
+        {% endif %}
+
+        <!-- CVE Details Card -->
+        <div class="details-card">
+            <!-- Header Section -->
+            <div class="details-header">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h1 class="details-title">
+                            <i class="fas fa-bug me-2"></i>{{ cve.cve }}
+                        </h1>
+                        <div class="details-meta mt-2">
+                            <span class="type-badge badge bg-info me-2">{{ cve.type }}</span>
+                            <span class="badge {% if cve.severity == 'HIGH' %}bg-danger{% elif cve.severity == 'MEDIUM' %}bg-warning{% else %}bg-success{% endif %} me-2">
+                                {{ cve.severity }}
+                            </span>
+                            <span class="text-muted">Published: {{ cve.published_date }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description Section -->
+            <div class="details-section">
+                <h5 class="section-heading">Description</h5>
+                <div class="description-content">
+                    {{ cve.description }}
+                </div>
+            </div>
+
+            {% if current_user.is_authenticated %}
+            <!-- Input Vector Section -->
+            <div class="details-section">
+                <h5 class="section-heading">Input Vector</h5>
+                <div class="code-block {% if cve.input|length < 100 %}compact{% endif %}">
+                    <div class="code-block-content">
+                        <button class="copy-btn" onclick="copyToClipboard('input-code')" data-bs-toggle="tooltip" data-bs-placement="left" title="Copy to clipboard">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <pre><code id="input-code">{{ cve.input }}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payload Section -->
+            <div class="details-section">
+                <h5 class="section-heading">Payload</h5>
+                <div class="code-block {% if cve.mitre|length < 100 %}compact{% endif %}">
+                    <div class="code-block-content">
+                        <button class="copy-btn" onclick="copyToClipboard('payload-code')" data-bs-toggle="tooltip" data-bs-placement="left" title="Copy to clipboard">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <pre><code id="payload-code">{{ cve.mitre }}</code></pre>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Initialize tooltips -->
+    <script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+    function copyToClipboard(elementId) {
+        const element = document.getElementById(elementId);
+        const text = element.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            // Visual feedback
+            const button = element.parentElement.querySelector('.copy-btn');
+            const icon = button.querySelector('i');
+            icon.classList.remove('fa-copy');
+            icon.classList.add('fa-check');
+            setTimeout(() => {
+                icon.classList.remove('fa-check');
+                icon.classList.add('fa-copy');
+            }, 2000);
+        });
+    }
+    </script>
+</body>
+</html> 
