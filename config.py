@@ -12,7 +12,7 @@ class Config:
     FORCE_HTTPS = os.environ.get('FORCE_HTTPS', 'False').lower() == 'true'
     
     # Database
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///users.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///instance/users.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Session config
