@@ -1,9 +1,10 @@
-
 from flask import Flask
 from config import Config
 from extensions import db, login_manager, csrf, limiter
 from flask_talisman import Talisman
 from error_handlers import configure_logging, register_error_handlers
+import os
+from models import User  # Needed for creating the test user
 
 def create_app():
     app = Flask(__name__, template_folder="templates", static_folder="static")
@@ -49,10 +50,21 @@ def create_app():
     configure_logging(app)
     register_error_handlers(app)
     
-    # Initialize database
+    # Initialize database if not exists
     with app.app_context():
-        db.create_all()
-    
+        db_path = os.path.join(app.instance_path, "users.db")
+        if not os.path.exists(db_path):
+            os.makedirs(app.instance_path, exist_ok=True)
+            db.create_all()
+            print("✅ Database created.")
+
+            # Optional: create test user
+            test_user = User(username="admin", email="admin@example.com")
+            test_user.set_password("AdminTest@123456")
+            db.session.add(test_user)
+            db.session.commit()
+            print("✅ Test user created: admin / AdminTest@123456")
+
     return app
 
 # Create the app instance
