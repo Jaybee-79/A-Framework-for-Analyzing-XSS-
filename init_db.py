@@ -3,6 +3,7 @@ from extensions import db
 from models import User
 import os
 
+
 def init_db():
     # Create a new app instance
     app = create_app()
